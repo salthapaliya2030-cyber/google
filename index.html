@@ -184,7 +184,7 @@
         return;
       }
       // Direct website links open normally in a separate tab.
-      const tab = window.open(destination.url, "_blank", "noopener");
+      const tab = window.open(destination.url, "_blank");
       if (!tab) showStatus("Allow pop-ups to open that website.");
     }
 
