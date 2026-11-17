@@ -88,7 +88,7 @@
 
   <div class="buttons">
     <button type="button" id="searchBtn">Google Search</button>
-    <button type="button" id="newTabBtn">Open in New Tab</button>
+    <button type="button" id="newTabBtn">Open Result in New Tab</button>
     <button type="button" id="blankBtn">Open in about:blank</button>
   </div>
 
@@ -97,34 +97,57 @@
   <script>
     const input = document.getElementById("queryInput");
     const form = document.getElementById("searchForm");
-    const SUFFIX = "/?://blooket.com";
+    const SUFFIX = "/?blooket.com/?ixl.com/?gimkit.com/";
 
     if (window.location.href === "about:blank") {
       document.getElementById("blankBtn").style.display = "none";
     }
 
-    function buildDestination(rawInput) {
+    function getDestination(rawInput) {
       const text = rawInput.trim();
-      if (!text) return "";
+      if (!text) return null;
 
-      const looksLikeUrl = !/\s/.test(text) &&
-        /^[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+/.test(text);
+      const looksLikeUrl = !/\\s/.test(text) &&
+        /^(https?:\\/\\/)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}([/:?#].*)?$/i.test(text);
 
       if (looksLikeUrl) {
         let url = text;
-        if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-        return url.replace(/\/+$/, "") + SUFFIX;
+        if (!/^https?:\\/\\//i.test(url)) url = "https://" + url;
+        return {
+          type: "url",
+          value: url.replace(/\\/+$/, "") + SUFFIX
+        };
       }
 
-      return "https://www.google.com/search?q=" + encodeURIComponent(text);
+      return {
+        type: "search",
+        value: "https://www.google.com/search?q=" + encodeURIComponent(text)
+      };
     }
 
-    function handleLaunch(newTab = false) {
-      const destination = buildDestination(input.value);
-      if (!destination) { input.focus(); return; }
+    function openInBlank(destination) {
+      const win = window.open("about:blank", "_blank");
+      if (!win) {
+        alert("Pop-up blocked. Allow pop-ups for this site and try again.");
+        return;
+      }
+      win.location.replace(destination);
+    }
 
-      if (newTab) window.open(destination, "_blank", "noopener,noreferrer");
-      else window.location.assign(destination);
+    function handleLaunch(forceNewTab = false) {
+      const destination = getDestination(input.value);
+      if (!destination) {
+        input.focus();
+        return;
+      }
+
+      // Search results always open in a fresh about:blank tab.
+      // Direct website addresses keep the custom suffix.
+      if (destination.type === "search" || forceNewTab) {
+        openInBlank(destination.value);
+      } else {
+        window.location.assign(destination.value);
+      }
     }
 
     form.addEventListener("submit", event => {
@@ -141,7 +164,7 @@
         alert("Pop-up blocked. Allow pop-ups and try again.");
         return;
       }
-      const htmlContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+      const htmlContent = "<!DOCTYPE html>\\n" + document.documentElement.outerHTML;
       win.document.open();
       win.document.write(htmlContent);
       win.document.close();
