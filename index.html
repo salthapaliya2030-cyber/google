@@ -207,9 +207,7 @@
     document.getElementById("forward").addEventListener("click", () => history.forward());
     document.getElementById("reload").addEventListener("click", () => location.reload());
     document.querySelector(".new-tab").addEventListener("click", () => {
-      query.value = "";
-      address.value = "";
-      query.focus();
+      window.open(window.location.href, "_blank");
     });
     document.getElementById("more").addEventListener("click", () => showStatus("Qytrix start page"));
     address.addEventListener("input", () => { query.value = address.value; });
