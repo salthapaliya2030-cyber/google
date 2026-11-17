@@ -3,172 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#202124">
-  <title>Google</title>
-  <link rel="icon" href="https://www.google.com/favicon.ico">
+  <meta name="theme-color" content="#0b0a10">
+  <meta name="description" content="Qytrix — search beyond limits.">
+  <title>Qytrix</title>
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    :root {
+      color-scheme: dark;
+      --bg: #0b0a10;
+      --panel: #17151f;
+      --panel-2: #211d2c;
+      --line: #302a3d;
+      --muted: #9992aa;
+      --text: #f4f0ff;
+      --purple: #9258ff;
+      --purple-2: #6d35e8;
+    }
+    * { box-sizing: border-box; }
     body {
-      min-height: 100vh; background: #202124; color: #e8eaed;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; padding: 24px; overflow: hidden;
+      margin: 0; min-height: 100vh; color: var(--text);
+      background: var(--bg); font-family: Inter, ui-sans-serif, system-ui, Arial, sans-serif;
+      overflow: hidden;
     }
-    .logo {
-      font-size: clamp(3.5rem, 10vw, 5rem); font-weight: 600;
-      margin-bottom: 34px; letter-spacing: -3px; user-select: none;
-      animation: fadeIn .7s ease both;
+    .browser { min-height: 100vh; display: flex; flex-direction: column; }
+    .tab-strip {
+      height: 68px; display: flex; align-items: end; gap: 8px;
+      padding: 0 18px; background: #09080d; border-bottom: 1px solid #282331;
     }
-    .logo span:nth-child(1) { color: #4285f4; }
-    .logo span:nth-child(2) { color: #ea4335; }
-    .logo span:nth-child(3) { color: #fbbc05; }
-    .logo span:nth-child(4) { color: #4285f4; }
-    .logo span:nth-child(5) { color: #34a853; }
-    .logo span:nth-child(6) { color: #ea4335; }
-    .search-box {
-      width: 100%; max-width: 590px; min-height: 54px;
-      display: flex; align-items: center; gap: 13px;
-      background: #303134; border: 1px solid #5f6368;
-      border-radius: 30px; padding: 0 19px;
-      transition: background .2s, box-shadow .2s, border-color .2s;
-      animation: fadeIn .8s ease both;
+    .tab {
+      height: 54px; min-width: 210px; max-width: 320px; padding: 0 18px;
+      display: flex; align-items: center; gap: 11px;
+      background: #17141e; border: 1px solid #302a3d; border-bottom-color: #17141e;
+      border-radius: 17px 17px 0 0; color: var(--text); font-size: 14px;
     }
-    .search-box:hover, .search-box:focus-within {
-      background: #3c4043; border-color: transparent;
-      box-shadow: 0 2px 10px rgba(0,0,0,.35);
+    .tab img { width: 25px; height: 25px; }
+    .tab-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+    .tab-close { color: #b9b2c7; font-size: 20px; line-height: 1; }
+    .new-tab {
+      width: 48px; height: 48px; margin-bottom: 2px; border: 0; border-radius: 15px;
+      color: #d9d2e6; background: transparent; font-size: 27px; cursor: pointer;
     }
-    .search-icon { width: 19px; height: 19px; flex-shrink: 0; color: #9aa0a6; }
-    input {
-      flex: 1; min-width: 0; background: transparent; border: none;
-      outline: none; color: #e8eaed; font-size: 16px; height: 50px;
+    .new-tab:hover { background: #1c1825; }
+    .window-actions { margin-left: auto; height: 54px; display: flex; align-items: center; gap: 25px; color: #bcb5c9; padding: 0 12px; }
+    .toolbar {
+      min-height: 76px; display: flex; align-items: center; gap: 17px;
+      padding: 12px 25px; background: #17151e; border-bottom: 1px solid #302a3d;
     }
-    input::placeholder { color: #9aa0a6; }
-    .buttons {
-      margin-top: 28px; display: flex; gap: 12px;
-      flex-wrap: wrap; justify-content: center;
-      animation: fadeIn .9s ease both;
+    .nav-button, .more {
+      border: 0; background: transparent; color: #c2bbcf; font-size: 27px;
+      cursor: pointer; width: 30px; height: 38px; display: grid; place-items: center;
     }
-    button {
-      background: #303134; border: 1px solid #303134;
-      border-radius: 5px; color: #e8eaed; font-size: 14px;
-      padding: 11px 17px; cursor: pointer;
-      transition: background .18s, border-color .18s, transform .18s;
+    .nav-button:hover, .more:hover { color: white; }
+    .address-wrap {
+      flex: 1; min-width: 0; height: 54px; display: flex; align-items: center; gap: 14px;
+      border: 1px solid #3a3348; background: #0e0d13; border-radius: 30px;
+      padding: 0 18px; transition: border-color .2s, box-shadow .2s;
     }
-    button:hover { border-color: #5f6368; background: #3c4043; transform: translateY(-1px); }
-    button:active { transform: translateY(0); }
-    button:focus-visible { outline: 2px solid #8ab4f8; outline-offset: 3px; }
-    .hint { color: #9aa0a6; font-size: 12px; margin-top: 26px; animation: fadeIn 1s ease both; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+    .address-wrap:focus-within { border-color: var(--purple); box-shadow: 0 0 0 3px #9258ff20; }
+    .globe { color: #aaa2ba; font-size: 21px; }
+    #address {
+      width: 100%; min-width: 0; border: 0; outline: 0; background: transparent;
+      color: var(--text); font-size: 16px;
     }
-    @media (max-width: 480px) {
-      .logo { margin-bottom: 28px; }
-      .buttons { gap: 9px; }
-      button { padding: 10px 13px; font-size: 13px; }
-      .hint { text-align: center; }
+    #address::placeholder { color: #81798f; }
+    .star { color: #c3bbd0; font-size: 24px; }
+    main {
+      flex: 1; min-height: 0; position: relative; display: grid; place-items: center;
+      overflow: auto; padding: 42px 22px;
+      background:
+        radial-gradient(ellipse at 0% 0%, #48218b55 0, transparent 32%),
+        radial-gradient(ellipse at 100% 100%, #49218b44 0, transparent 34%),
+        linear-gradient(135deg, #0b0a10, #0a0910 65%, #100c19);
     }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    main::before, main::after {
+      content: ""; position: absolute; width: 46vw; height: 38vw; pointer-events: none;
+      border: 1px solid #6c39c522; transform: rotate(-25deg); border-radius: 48%;
     }
+    main::before { top: -34vw; left: -19vw; box-shadow: 0 0 0 28px #6c39c510, 0 0 0 58px #6c39c509; }
+    main::after { bottom: -36vw; right: -20vw; box-shadow: 0 0 0 28px #6c39c510, 0 0 0 58px #6c39c509; }
+    .home { width: min(720px, 100%); text-align: center; position: relative; z-index: 1; }
+    .brand-mark { width: 112px; height: 112px; object-fit: contain; filter: drop-shadow(0 8px 30px #7e43ff35); }
+    h1 { margin: 14px 0 5px; font-size: clamp(42px, 7vw, 64px); letter-spacing: .12em; font-weight: 750; }
+    .tagline { color: #aaa1bd; letter-spacing: .28em; font-size: 14px; margin: 0 0 38px; }
+    .search-form {
+      display: flex; align-items: center; gap: 15px; height: 68px; padding: 0 22px;
+      border: 1px solid #8149ed; border-radius: 40px; background: #111018;
+      box-shadow: 0 0 24px #7d42ff20; transition: box-shadow .2s, background .2s;
+    }
+    .search-form:focus-within { box-shadow: 0 0 0 4px #9258ff20, 0 0 35px #7d42ff35; background: #15121e; }
+    .search-form input { flex: 1; min-width: 0; border: 0; outline: 0; color: var(--text); background: transparent; font-size: 17px; }
+    .search-form input::placeholder { color: #8e879d; }
+    .go {
+      width: 42px; height: 42px; border: 0; border-radius: 50%; background: transparent;
+      color: #d9c9ff; font-size: 27px; cursor: pointer;
+    }
+    .go:hover { background: #9258ff22; }
+    .note { margin-top: 22px; color: #777083; font-size: 12px; }
+    .status {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      color: #cfc6df; background: #211b2c; border: 1px solid #403451;
+      padding: 9px 14px; border-radius: 10px; font-size: 12px; display: none; z-index: 5;
+    }
+    @media (max-width: 600px) {
+      .tab-strip { padding: 0 8px; height: 58px; }
+      .tab { min-width: 150px; height: 47px; }
+      .window-actions { display: none; }
+      .toolbar { padding: 9px 12px; gap: 9px; min-height: 65px; }
+      .address-wrap { height: 48px; padding: 0 13px; }
+      #address { font-size: 14px; }
+      main { padding: 30px 17px; }
+      .brand-mark { width: 88px; height: 88px; }
+      .tagline { letter-spacing: .16em; margin-bottom: 28px; }
+      .search-form { height: 59px; padding: 0 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
   </style>
 </head>
 <body>
-  <div class="logo" aria-label="Google">
-    <span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span>
+  <div class="browser">
+    <header>
+      <div class="tab-strip">
+        <div class="tab"><img src="logo.svg" alt=""><span class="tab-name">Qytrix</span><span class="tab-close">×</span></div>
+        <button class="new-tab" type="button" aria-label="New tab">+</button>
+        <div class="window-actions" aria-hidden="true"><span>—</span><span>□</span><span>×</span></div>
+      </div>
+      <div class="toolbar">
+        <button class="nav-button" type="button" id="back" aria-label="Back">‹</button>
+        <button class="nav-button" type="button" id="forward" aria-label="Forward">›</button>
+        <button class="nav-button" type="button" id="reload" aria-label="Refresh">↻</button>
+        <form class="address-wrap" id="addressForm">
+          <span class="globe" aria-hidden="true">◎</span>
+          <input id="address" type="text" placeholder="Search or enter a website URL..." autocomplete="off" aria-label="Search or enter a website URL">
+          <span class="star" aria-hidden="true">☆</span>
+        </form>
+        <button class="more" type="button" id="more" aria-label="More options">⋮</button>
+      </div>
+    </header>
+    <main>
+      <section class="home">
+        <img class="brand-mark" src="logo.svg" alt="Qytrix logo">
+        <h1>QYTRIX</h1>
+        <p class="tagline">search beyond limits.</p>
+        <form class="search-form" id="searchForm">
+          <span class="globe" aria-hidden="true">⌕</span>
+          <input id="query" type="text" placeholder="Search or enter a website URL..." autocomplete="off" aria-label="Search or enter a website URL">
+          <button class="go" type="submit" aria-label="Go">→</button>
+        </form>
+        <p class="note">search the web or enter a website address</p>
+      </section>
+    </main>
   </div>
-
-  <form class="search-box" id="searchForm">
-    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-      <circle cx="11" cy="11" r="7"></circle>
-      <path d="m16 16 4 4"></path>
-    </svg>
-    <input type="text" id="queryInput" placeholder="Search Google or type a URL"
-      autocomplete="off" autofocus aria-label="Search Google or type a URL">
-  </form>
-
-  <div class="buttons">
-    <button type="button" id="searchBtn">Google Search</button>
-    <button type="button" id="newTabBtn">Open Result in New Tab</button>
-    <button type="button" id="blankBtn">Open in about:blank</button>
-  </div>
-
-  <div class="hint">Search the web or enter a website address</div>
-
+  <div class="status" id="status" role="status"></div>
   <script>
-    const input = document.getElementById("queryInput");
-    const form = document.getElementById("searchForm");
-    const SUFFIX = "/?blooket.com/?ixl.com/?gimkit.com/";
+    const address = document.getElementById("address");
+    const query = document.getElementById("query");
+    const statusBox = document.getElementById("status");
 
-    if (window.location.href === "about:blank") {
-      document.getElementById("blankBtn").style.display = "none";
-    }
-
-    function getDestination(rawInput) {
-      const text = rawInput.trim();
-      if (!text) return null;
-
-      const looksLikeUrl = !/\\s/.test(text) &&
-        /^(https?:\\/\\/)?([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}([/:?#].*)?$/i.test(text);
-
-      if (looksLikeUrl) {
-        let url = text;
-        if (!/^https?:\\/\\//i.test(url)) url = "https://" + url;
-        return {
-          type: "url",
-          value: url.replace(/\\/+$/, "") + SUFFIX
-        };
+    function resolveInput(raw) {
+      const value = raw.trim();
+      if (!value) return null;
+      const isDomain = !/\s/.test(value) &&
+        /^(https?:\/\/)?(localhost|([a-z0-9-]+\.)+[a-z]{2,})(:\d+)?([/?#].*)?$/i.test(value);
+      if (isDomain) {
+        return { type: "url", url: /^https?:\/\//i.test(value) ? value : "https://" + value };
       }
-
-      return {
-        type: "search",
-        value: "https://www.google.com/search?q=" + encodeURIComponent(text)
-      };
+      return { type: "search", url: "https://www.google.com/search?q=" + encodeURIComponent(value) };
     }
 
-    function openInBlank(destination) {
-      const win = window.open("about:blank", "_blank");
-      if (!win) {
-        alert("Pop-up blocked. Allow pop-ups for this site and try again.");
+    function launch(raw) {
+      const destination = resolveInput(raw);
+      if (!destination) return;
+      // Search results are opened in a fresh about:blank tab.
+      if (destination.type === "search") {
+        const tab = window.open("about:blank", "_blank");
+        if (!tab) {
+          showStatus("Allow pop-ups for Qytrix to open search results.");
+          return;
+        }
+        tab.location.replace(destination.url);
         return;
       }
-      win.location.replace(destination);
+      // Direct website links open normally in a separate tab.
+      const tab = window.open(destination.url, "_blank", "noopener");
+      if (!tab) showStatus("Allow pop-ups to open that website.");
     }
 
-    function handleLaunch(forceNewTab = false) {
-      const destination = getDestination(input.value);
-      if (!destination) {
-        input.focus();
-        return;
-      }
-
-      // Search results always open in a fresh about:blank tab.
-      // Direct website addresses keep the custom suffix.
-      if (destination.type === "search" || forceNewTab) {
-        openInBlank(destination.value);
-      } else {
-        window.location.assign(destination.value);
-      }
+    function showStatus(message) {
+      statusBox.textContent = message;
+      statusBox.style.display = "block";
+      window.clearTimeout(showStatus.timer);
+      showStatus.timer = window.setTimeout(() => statusBox.style.display = "none", 3200);
     }
 
-    form.addEventListener("submit", event => {
+    document.getElementById("addressForm").addEventListener("submit", event => {
       event.preventDefault();
-      handleLaunch(false);
+      launch(address.value);
     });
-
-    document.getElementById("searchBtn").addEventListener("click", () => handleLaunch(false));
-    document.getElementById("newTabBtn").addEventListener("click", () => handleLaunch(true));
-
-    document.getElementById("blankBtn").addEventListener("click", () => {
-      const win = window.open("about:blank", "_blank");
-      if (!win) {
-        alert("Pop-up blocked. Allow pop-ups and try again.");
-        return;
-      }
-      const htmlContent = "<!DOCTYPE html>\\n" + document.documentElement.outerHTML;
-      win.document.open();
-      win.document.write(htmlContent);
-      win.document.close();
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+      launch(query.value);
     });
+    document.getElementById("back").addEventListener("click", () => history.back());
+    document.getElementById("forward").addEventListener("click", () => history.forward());
+    document.getElementById("reload").addEventListener("click", () => location.reload());
+    document.querySelector(".new-tab").addEventListener("click", () => {
+      query.value = "";
+      address.value = "";
+      query.focus();
+    });
+    document.getElementById("more").addEventListener("click", () => showStatus("Qytrix start page"));
+    address.addEventListener("input", () => { query.value = address.value; });
+    query.addEventListener("input", () => { address.value = query.value; });
+    query.focus();
   </script>
 </body>
 </html>
