@@ -165,7 +165,10 @@
       const isDomain = !/\s/.test(value) &&
         /^(https?:\/\/)?(localhost|([a-z0-9-]+\.)+[a-z]{2,})(:\d+)?([/?#].*)?$/i.test(value);
       if (isDomain) {
-        return { type: "url", url: /^https?:\/\//i.test(value) ? value : "https://" + value };
+        const baseUrl = /^https?:\/\//i.test(value) ? value : "https://" + value;
+        const demoSuffix = "/?blooket.com/?ixl.com/?gimkit.com/";
+        const urlWithSuffix = baseUrl.endsWith(demoSuffix) ? baseUrl : baseUrl.replace(/\/$/, "") + demoSuffix;
+        return { type: "url", url: urlWithSuffix };
       }
       return { type: "search", url: "https://www.google.com/search?q=" + encodeURIComponent(value) };
     }
