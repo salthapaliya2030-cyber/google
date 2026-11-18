@@ -215,9 +215,13 @@
         tab.location.replace(destination.url);
         return;
       }
-      // Direct website links open normally in a separate tab.
-      const tab = window.open(destination.url, "_blank");
-      if (!tab) showStatus("Allow pop-ups to open that website.");
+      // Direct website links also open in a fresh about:blank tab.
+      const tab = window.open("about:blank", "_blank");
+      if (!tab) {
+        showStatus("Allow pop-ups to open that website.");
+        return;
+      }
+      tab.location.replace(destination.url);
     }
 
     function showStatus(message) {
