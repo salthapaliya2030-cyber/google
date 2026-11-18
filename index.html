@@ -87,6 +87,9 @@
     main::before { top: -34vw; left: -19vw; box-shadow: 0 0 0 28px #6c39c510, 0 0 0 58px #6c39c509; }
     main::after { bottom: -36vw; right: -20vw; box-shadow: 0 0 0 28px #6c39c510, 0 0 0 58px #6c39c509; }
     .home { width: min(720px, 100%); max-height: 100%; min-height: 0; text-align: center; position: relative; z-index: 1; }
+    .viewer { display: none; position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; border: 0; background: #fff; }
+    .viewer.active { display: block; }
+    .home.hidden { display: none; }
     .brand-mark { width: clamp(54px, 13vh, 112px); height: clamp(54px, 13vh, 112px); object-fit: contain; filter: drop-shadow(0 8px 30px #7e43ff35); }
     h1 { margin: clamp(4px, 1.6vh, 14px) 0 5px; font-size: clamp(30px, 7vw, 64px); letter-spacing: .12em; font-weight: 750; }
     .tagline { color: #aaa1bd; letter-spacing: clamp(.1em, .28em, .28em); font-size: clamp(10px, 1.8vh, 14px); margin: 0 0 clamp(14px, 4vh, 38px); }
@@ -169,7 +172,8 @@
       </div>
     </header>
     <main>
-      <section class="home">
+      <iframe class="viewer" id="viewer" title="Website viewer" referrerpolicy="strict-origin-when-cross-origin" allow="fullscreen; autoplay; encrypted-media; picture-in-picture"></iframe>
+      <section class="home" id="home">
         <img class="brand-mark" src="logo.svg" alt="Qytrix logo">
         <h1>QYTRIX</h1>
         <p class="tagline">search beyond limits.</p>
@@ -187,6 +191,20 @@
     const address = document.getElementById("address");
     const query = document.getElementById("query");
     const statusBox = document.getElementById("status");
+    const viewer = document.getElementById("viewer");
+    const home = document.getElementById("home");
+    const pageHistory = [];
+    let historyIndex = -1;
+
+    function showPage(url) {
+      pageHistory.splice(historyIndex + 1);
+      pageHistory.push(url);
+      historyIndex = pageHistory.length - 1;
+      viewer.src = url;
+      viewer.classList.add("active");
+      home.classList.add("hidden");
+      address.value = url;
+    }
 
     function resolveInput(raw) {
       const value = raw.trim();
@@ -215,13 +233,8 @@
         tab.location.replace(destination.url);
         return;
       }
-      // Direct website links also open in a fresh about:blank tab.
-      const tab = window.open("about:blank", "_blank");
-      if (!tab) {
-        showStatus("Allow pop-ups to open that website.");
-        return;
-      }
-      tab.location.replace(destination.url);
+      // Load direct websites inside Qytrix instead of opening a new browser tab.
+      showPage(destination.url);
     }
 
     function showStatus(message) {
@@ -239,9 +252,33 @@
       event.preventDefault();
       launch(query.value);
     });
-    document.getElementById("back").addEventListener("click", () => history.back());
-    document.getElementById("forward").addEventListener("click", () => history.forward());
-    document.getElementById("reload").addEventListener("click", () => location.reload());
+    document.getElementById("back").addEventListener("click", () => {
+      if (historyIndex > 0) {
+        historyIndex--;
+        viewer.src = pageHistory[historyIndex];
+        address.value = pageHistory[historyIndex];
+      } else if (viewer.classList.contains("active")) {
+        viewer.classList.remove("active");
+        home.classList.remove("hidden");
+        address.value = "";
+      }
+    });
+    document.getElementById("forward").addEventListener("click", () => {
+      if (historyIndex < pageHistory.length - 1) {
+        historyIndex++;
+        viewer.src = pageHistory[historyIndex];
+        address.value = pageHistory[historyIndex];
+        viewer.classList.add("active");
+        home.classList.add("hidden");
+      }
+    });
+    document.getElementById("reload").addEventListener("click", () => {
+      if (viewer.classList.contains("active") && historyIndex >= 0) {
+        viewer.src = pageHistory[historyIndex];
+      } else {
+        location.reload();
+      }
+    });
     document.querySelector(".new-tab").addEventListener("click", () => {
       window.open(window.location.href, "_blank");
     });
